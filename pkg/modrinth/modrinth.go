@@ -10,6 +10,7 @@ import (
 
 type Modrinth struct {
 	installDir string
+	db         *AppDb
 }
 
 func New(installDir string) (*Modrinth, error) {
@@ -20,30 +21,31 @@ func New(installDir string) (*Modrinth, error) {
 
 	log.Debug().Field("installDir", installDir).Msg("found Modrinth install dir")
 
+	db, err := NewAppDb(filepath.Join(installDir, "app.db"))
+	if err != nil {
+		return nil, fmt.Errorf("failed opening app db: %w", err)
+	}
+
 	t := &Modrinth{
 		installDir: installDir,
+		db:         db,
 	}
 
 	return t, nil
 }
 
+func (t *Modrinth) Close() error {
+	return t.db.Close()
+}
+
 func (t *Modrinth) Profiles() ([]*Profile, error) {
-	profileDir := filepath.Join(t.installDir, "profiles")
-	dirEntries, err := os.ReadDir(profileDir)
+	profiles, err := t.db.Profiles()
 	if err != nil {
-		return nil, fmt.Errorf("failed listing profiles directory: %w", err)
+		return nil, fmt.Errorf("failed getting profiles from db: %w", err)
 	}
 
-	profiles := make([]*Profile, 0, len(dirEntries))
-	for _, de := range dirEntries {
-		if !de.IsDir() {
-			continue
-		}
-		profile, err := ParseProfile(filepath.Join(profileDir, de.Name()))
-		if err != nil {
-			return nil, fmt.Errorf("failed parsing profile: %w", err)
-		}
-		profiles = append(profiles, profile)
+	for _, p := range profiles {
+		p.FullPath = filepath.Join(t.installDir, "profiles", p.Path)
 	}
 
 	return profiles, nil

@@ -36,6 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed initializing Modrinth handler")
 	}
+	defer mr.Close()
 
 	profiles, err := mr.Profiles()
 	if err != nil {
@@ -91,11 +92,7 @@ func getTargetFileName(nameTemplate string, profile *modrinth.Profile) (string, 
 
 func findProfile(profiles []*modrinth.Profile, name string) (*modrinth.Profile, bool) {
 	for _, profile := range profiles {
-		if profile.Name == name ||
-			profile.Path != "" && profile.Path == name ||
-			profile.Uuid != "" && profile.Uuid == name ||
-			profile.Metadata != nil && profile.Metadata.Name != "" && profile.Metadata.Name == name {
-
+		if profile.Name == name || profile.Path != "" && profile.Path == name {
 			return profile, true
 		}
 	}
