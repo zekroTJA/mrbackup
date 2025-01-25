@@ -20,3 +20,9 @@ Options:
                          Log level [default: info]
   --help, -h             display this help and exit
 ```
+
+## Installation
+
+```
+go install github.com/zekrotja/mrbackup/cmd/mrbackup@latest
+```
