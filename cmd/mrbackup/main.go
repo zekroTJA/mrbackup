@@ -20,7 +20,7 @@ type Args struct {
 	Profile string `arg:"positional,required" help:"The profile to back up"`
 	Target  string `arg:"positional,required,env:TARGET_PATH" help:"Target path for backup files"`
 
-	FilenameFormat string `arg:"--filename-format,-f,env:FILENAME_FORMAT" help:"Format of the file name" default:"{{.Profile.Name}}_{{.Timestamp}}.zip"`
+	FilenameFormat string `arg:"--filename-format,-f,env:FILENAME_FORMAT" help:"Format of the file name" default:"{{.Profile.Name}}_{{.Profile.GameVersion}}_{{.Timestamp}}.zip"`
 
 	InstallDir string      `arg:"--install-dir,env:MODRINTH_DIR" help:"Custom Modrinth install directory"`
 	LogLevel   level.Level `arg:"--log-level,-l" help:"Log level" default:"info"`
